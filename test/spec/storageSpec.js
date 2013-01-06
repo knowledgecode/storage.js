@@ -9,8 +9,16 @@ describe('storage', function () {
         sessionStorage.setItem('test2', JSON.stringify(123));
         sessionStorage.setItem('test3', JSON.stringify([10, 20, 30]));
 
-        expect(sessionStorage.key(2)).toEqual('test3');
-        expect(sessionStorage.key(3)).toBeFalsy();
+        // This result will vary depending on the browser.
+        expect(sessionStorage.key(2)).not.toBeFalsy();
+        expect((function () {
+            try {
+                return sessionStorage.key(3);
+            } catch (e) {
+                // IE7-9 does not conform to the standards.
+                return null;
+            }
+        }())).toBeFalsy();
     });
 
     it('setItem', function () {
@@ -38,7 +46,7 @@ describe('storage', function () {
         expect(JSON.parse(sessionStorage.getItem('test2'))).toEqual(456);
         expect(JSON.parse(sessionStorage.getItem('test3'))).toEqual([10, 20, 30]);
         expect(JSON.parse(sessionStorage.getItem('test4'))).toEqual({'item': 'value'});
-        expect(JSON.parse(sessionStorage.getItem('test5'))).toBeFalsy();
+        expect(sessionStorage.getItem('test5')).toBeFalsy();
     });
 
     it('removeItem', function () {
